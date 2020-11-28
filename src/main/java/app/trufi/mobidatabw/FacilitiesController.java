@@ -9,6 +9,7 @@ import java.util.stream.Stream;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -49,5 +50,15 @@ public class FacilitiesController {
     @GetMapping("/facilities/{equipmentnumber}")
     public Facility getFacility(@PathVariable("equipmentnumber") long equipmentNumber) {
         return facilitiesLoader.getFacility(equipmentNumber).orElseThrow();
+    }
+
+    @PostMapping("/mockDisable/{equipmentnumber}")
+    public void disableMock(@PathVariable("equipmentnumber") long equipmentNumber) {
+        facilitiesLoader.markAsDisabled(equipmentNumber);
+    }
+
+    @PostMapping("/clearMocks")
+    public void disableMock() {
+        facilitiesLoader.resetAllMocks();
     }
 }

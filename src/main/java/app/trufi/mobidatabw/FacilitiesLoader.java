@@ -1,10 +1,14 @@
 package app.trufi.mobidatabw;
 
 import app.trufi.mobidatabw.model.Facility;
+import app.trufi.mobidatabw.model.FacilityState;
 import java.lang.invoke.MethodHandles;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.locks.ReentrantLock;
+import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,6 +23,9 @@ public class FacilitiesLoader {
 
     Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     List<Facility> cachedFacilities;
+
+    private ReentrantLock mockLock = new ReentrantLock();
+    List<Long> mockDisabledFacilities = new ArrayList<>();
 
     @Value("${accessToken}")
     String accessToken;
@@ -51,7 +58,15 @@ public class FacilitiesLoader {
         if (cachedFacilities == null) {
             refreshFacilities();
         }
-        return cachedFacilities;
+        return cachedFacilities.stream()
+                .map(
+                        facility -> {
+                            if (mockDisabledFacilities.contains(facility.getEquipmentnumber())) {
+                                facility.setState(FacilityState.INACTIVE);
+                            }
+                            return facility;
+                        })
+                .collect(Collectors.toList());
     }
 
     public Optional<Facility> getFacility(long equipmentNumber) {
@@ -60,6 +75,31 @@ public class FacilitiesLoader {
         }
         return cachedFacilities.stream()
                 .filter(facility -> facility.getEquipmentnumber() == equipmentNumber)
+                .map(
+                        facility -> {
+                            if (mockDisabledFacilities.contains(facility.getEquipmentnumber())) {
+                                facility.setState(FacilityState.INACTIVE);
+                            }
+                            return facility;
+                        })
                 .findFirst();
+    }
+
+    public void markAsDisabled(long equipmentNumber) {
+        mockLock.lock();
+        try {
+            mockDisabledFacilities.add(equipmentNumber);
+        } finally {
+            mockLock.unlock();
+        }
+    }
+
+    public void resetAllMocks() {
+        mockLock.lock();
+        try {
+            mockDisabledFacilities.clear();
+        } finally {
+            mockLock.unlock();
+        }
     }
 }
