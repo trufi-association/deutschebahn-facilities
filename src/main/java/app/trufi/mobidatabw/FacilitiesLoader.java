@@ -23,7 +23,7 @@ public class FacilitiesLoader {
     @Value("${accessToken}")
     String accessToken;
 
-    @Scheduled(fixedRate = 60 * 1000)
+    @Scheduled(fixedRate = 5 * 60 * 1000)
     public void refreshFacilities() {
         logger.info("Refreshing the facilities from the Deustchebahn API...");
         WebClient dbApiClient =
