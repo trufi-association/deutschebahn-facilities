@@ -98,6 +98,7 @@ public class FacilitiesLoader {
         mockLock.lock();
         try {
             mockDisabledFacilities.clear();
+            refreshFacilities();
         } finally {
             mockLock.unlock();
         }

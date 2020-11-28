@@ -29,10 +29,14 @@ class MobidatabwApplicationTests {
     }
 
     @Test
-    void mockDisablingWorks() {
+    void mockDisablingWorks() throws InterruptedException {
         facilitiesLoader.markAsDisabled(EQUIPMENT_NUMBER);
         assertEquals(
                 FacilityState.INACTIVE,
+                facilitiesLoader.getFacility(EQUIPMENT_NUMBER).get().getState());
+        facilitiesLoader.resetAllMocks();
+        assertEquals(
+                FacilityState.ACTIVE,
                 facilitiesLoader.getFacility(EQUIPMENT_NUMBER).get().getState());
     }
 }
