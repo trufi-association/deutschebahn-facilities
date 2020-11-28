@@ -54,7 +54,7 @@ public class FacilitiesLoader {
         return cachedFacilities;
     }
 
-    public Optional<Facility> getFacility(int equipmentNumber) {
+    public Optional<Facility> getFacility(long equipmentNumber) {
         if (cachedFacilities == null) {
             refreshFacilities();
         }

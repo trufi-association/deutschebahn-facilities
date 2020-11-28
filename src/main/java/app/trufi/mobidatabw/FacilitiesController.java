@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -43,5 +44,10 @@ public class FacilitiesController {
                     facilities.filter(facility -> facility.getStationnumber() == stationNumber);
         }
         return facilities.collect(Collectors.toList());
+    }
+
+    @GetMapping("/facilities/{equipmentnumber}")
+    public Facility getFacility(@PathVariable("equipmentnumber") long equipmentNumber) {
+        return facilitiesLoader.getFacility(equipmentNumber).orElseThrow();
     }
 }
